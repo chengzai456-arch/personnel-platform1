@@ -27,7 +27,7 @@ async function isAdmin(req) {
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 
   if (req.method === 'OPTIONS') {
@@ -69,6 +69,29 @@ export default async function handler(req, res) {
 
       if (error) return res.status(500).json({ error: error.message })
       return res.status(201).json(data)
+    } catch (err) {
+      return res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    if (!(await isAdmin(req))) {
+      return res.status(401).json({ error: 'Unauthorized' })
+    }
+
+    const id = req.query.id
+    if (!id) {
+      return res.status(400).json({ error: 'Item ID is required' })
+    }
+
+    try {
+      const { error } = await db
+        .from('items')
+        .delete()
+        .eq('id', id)
+
+      if (error) return res.status(500).json({ error: error.message })
+      return res.status(204).end()
     } catch (err) {
       return res.status(500).json({ error: 'Internal server error' })
     }
