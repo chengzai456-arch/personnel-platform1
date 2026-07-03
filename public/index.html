@@ -264,8 +264,16 @@ nav {
   position: sticky; top: 0; z-index: 50;
   background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-light);
-  padding: 0 32px; height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; height: 56px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.dash-topbar-left {
+  display: flex; align-items: center; gap: 8px;
+  min-width: 0; overflow: hidden;
+}
+.dash-topbar-left .dash-topbar-title {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 .dash-topbar-left { display: flex; align-items: center; gap: 12px; }
@@ -274,8 +282,11 @@ nav {
 .dash-topbar-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; }
 .dash-topbar-accent { color: var(--primary); }
 
-.dash-topbar-right { display: flex; align-items: center; gap: 16px; }
-.dash-user { display: flex; align-items: center; gap: 10px; cursor: default; }
+.dash-topbar-right {
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
+.dash-user { display: flex; align-items: center; gap: 8px; cursor: default; }
 .dash-avatar {
   width: 32px; height: 32px; border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
