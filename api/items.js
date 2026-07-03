@@ -2,11 +2,26 @@ import { db } from '../lib/supabase.js'
 
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN
 
-function isAdmin(req) {
+async function isAdmin(req) {
   const auth = req.headers.authorization
   if (!auth) return false
   const token = auth.replace('Bearer ', '')
-  return token === ADMIN_TOKEN
+
+  // Support both: legacy ADMIN_TOKEN and Feishu session token
+  if (ADMIN_TOKEN && token === ADMIN_TOKEN) return true
+
+  // Check session in DB
+  try {
+    const { data, error } = await db
+      .from('sessions')
+      .select('feishu_open_id')
+      .eq('id', token)
+      .gte('expires_at', new Date().toISOString())
+      .single()
+    return !!data
+  } catch {
+    return false
+  }
 }
 
 export default async function handler(req, res) {
@@ -35,7 +50,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    if (!isAdmin(req)) {
+    if (!(await isAdmin(req))) {
       return res.status(401).json({ error: 'Unauthorized' })
     }
 
