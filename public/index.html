@@ -441,7 +441,9 @@ nav {
   .hero-right { display: none; }
   nav { padding: 14px 20px; }
   #login { padding: 100px 20px 40px; }
-  .dash-topbar { padding: 0 16px; }
+  .dash-topbar { padding: 0 12px; gap: 8px; }
+  .dash-name, .dash-badge { display: none; }
+  .dash-topbar-right { gap: 8px; }
   .dash-main { padding: 20px 16px; }
   .page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
   .hero-stats { gap: 24px; }
@@ -568,8 +570,6 @@ nav {
     <div class="dash-topbar-right">
       <div class="dash-user">
         <div class="dash-avatar" id="userAvatar">管</div>
-        <span class="dash-name" id="userName">管理员</span>
-        <span class="dash-badge">管理</span>
       </div>
       <button class="dash-logout" id="logoutBtn">退出</button>
     </div>
