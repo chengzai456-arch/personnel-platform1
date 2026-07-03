@@ -285,9 +285,11 @@ nav {
 .dash-name { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
 .dash-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--primary-subtle); color: var(--primary); }
 .dash-logout {
-  padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--radius-pill);
-  background: transparent; color: var(--text-secondary); font-size: 12px; font-weight: 500;
+  padding: 8px 18px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill); background: transparent;
+  color: var(--text-secondary); font-size: 13px; font-weight: 600;
   cursor: pointer; font-family: var(--font-body); transition: var(--transition);
+  display: inline-flex; align-items: center; gap: 6px;
 }
 .dash-logout:hover { border-color: var(--error); color: var(--error); background: var(--error-subtle); }
 
@@ -585,6 +587,13 @@ nav {
       </button>
     </div>
     <div class="cards-grid" id="cardsGrid"></div>
+
+    <div style="text-align:center;margin-top:40px;padding-top:32px;border-top:1px solid var(--border-light)">
+      <button class="dash-logout" id="logoutBtnBottom" style="padding:12px 36px;font-size:14px;border-color:var(--error);color:var(--error);background:var(--error-subtle)">
+        退出登录
+      </button>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:8px">退出后返回首页，重新登录需要飞书授权</p>
+    </div>
   </main>
 </div>
 
@@ -844,6 +853,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('adminSubmit').addEventListener('click', adminLogin)
   document.getElementById('adminKeyInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') adminLogin() })
   document.getElementById('logoutBtn').addEventListener('click', logout)
+  const logoutBottom = document.getElementById('logoutBtnBottom')
+  if (logoutBottom) logoutBottom.addEventListener('click', logout)
   document.getElementById('addBtn').addEventListener('click', (e) => {
     createRipple(e, e.currentTarget)
     if (!isAdmin()) { showToast('只有管理员才能管理工具', 'error'); return }
