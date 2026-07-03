@@ -6,687 +6,459 @@
 <title>工作台 - Workbench</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
 :root {
-  --blue-6: #165DFF;
-  --blue-5: #4080FF;
-  --blue-4: #5E9AFF;
-  --blue-1: #E8F3FF;
-  --blue-0: #F0F6FF;
-  --gray-95: #1D2129;
-  --gray-80: #4E5969;
-  --gray-60: #86909C;
-  --gray-40: #C0C4CC;
-  --gray-20: #E5E6EB;
-  --gray-10: #F2F3F5;
-  --gray-5: #F7F8FA;
-  --white: #FFFFFF;
-  --red-6: #F53F3F;
-  --green-5: #23C343;
-  --green-1: #E8FFEA;
-  --radius-sm: 6px;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.06);
-  --shadow: 0 2px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 4px 8px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.12);
-  --shadow-xl: 0 8px 16px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.16);
+  --primary: #6c5ce7;
+  --primary-dark: #5649c0;
+  --primary-glow: rgba(108,92,231,0.35);
+  --secondary: #00cec9;
+  --secondary-glow: rgba(0,206,201,0.25);
+  --dark-bg: #0f0e17;
+  --dark-card: #1a1932;
+  --dark-surface: #232046;
+  --dark-border: #2d2b55;
+  --text-light: #f5f6fa;
+  --text-muted: #a0a0b8;
+  --text-gray: #636e72;
+  --gray-light: #dfe6e9;
+  --red: #d63031;
+  --green: #00b894;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-pill: 50px;
+  --font-body: 'Montserrat', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-heading: 'Orbitron', sans-serif;
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.3), 0 0 60px rgba(108,92,231,0.05);
+  --shadow-glow: 0 0 30px rgba(108,92,231,0.15);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Inter', -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  background: var(--gray-5);
-  color: var(--gray-95);
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-body);
+  color: var(--text-light);
+  background: var(--dark-bg);
   min-height: 100vh;
   overflow-x: hidden;
-}
-
-/* Loading bar */
-.loading-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--blue-6), var(--blue-4));
-  z-index: 9999;
-  border-radius: 0 2px 2px 0;
-}
-
-/* ============ LOGIN ============ */
-#login {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: linear-gradient(135deg, #F0F6FF 0%, #FFFFFF 40%, #E8F3FF 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#login::before {
-  content: '';
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(22,93,255,0.06) 0%, transparent 70%);
-  top: -200px;
-  right: -150px;
-  pointer-events: none;
-}
-
-#login::after {
-  content: '';
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(22,93,255,0.04) 0%, transparent 70%);
-  bottom: -100px;
-  left: -100px;
-  pointer-events: none;
-}
-
-.login-container {
-  text-align: center;
-  width: 380px;
-  position: relative;
-  z-index: 1;
-}
-
-.login-logo-wrap {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 28px;
-  position: relative;
-}
-
-.login-logo {
-  width: 72px;
-  height: 72px;
-  background: linear-gradient(135deg, var(--blue-6), var(--blue-4));
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(22,93,255,0.35);
-  position: relative;
-  z-index: 1;
-}
-
-.login-logo svg { width: 36px; height: 36px; fill: white; }
-
-.login-title {
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--gray-95);
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
-}
-
-.login-subtitle {
-  font-size: 14px;
-  color: var(--gray-60);
-  margin-bottom: 36px;
   line-height: 1.6;
 }
 
+/* ========== FLOATING SHAPES ========== */
+.floating-shapes {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0; overflow: hidden;
+}
+.shape {
+  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.12;
+}
+.shape-1 { width: 500px; height: 500px; background: var(--primary); top: -150px; left: -150px; animation: float 20s infinite ease-in-out; }
+.shape-2 { width: 400px; height: 400px; background: var(--secondary); bottom: -120px; right: -100px; animation: float 15s infinite ease-in-out reverse; }
+.shape-3 { width: 250px; height: 250px; background: var(--primary); top: 40%; right: 10%; animation: float 18s infinite ease-in-out; opacity: 0.08; }
+.shape-4 { width: 200px; height: 200px; background: var(--secondary); top: 20%; left: 60%; animation: float 12s infinite ease-in-out reverse; opacity: 0.06; }
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(60px, -60px); }
+  50% { transform: translate(-40px, 80px); }
+  75% { transform: translate(50px, 40px); }
+}
+
+/* ========== CUBE PRELOADER ========== */
+.preloader {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--dark-bg); display: flex; justify-content: center; align-items: center;
+  z-index: 9999; transition: opacity 0.6s ease;
+}
+.preloader.fade-out { opacity: 0; pointer-events: none; }
+.cube-folding {
+  width: 80px; height: 80px; position: relative;
+  transform-style: preserve-3d; perspective: 600px;
+  animation: cubeFold 2.5s infinite linear both;
+}
+.cube-folding span {
+  position: absolute; width: 80px; height: 80px;
+  background: var(--primary); opacity: 0.85;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+}
+.cube-folding .leaf1 { background: var(--secondary) !important; animation: foldAnim 2.5s infinite ease both; animation-delay: 0.12s; }
+.cube-folding .leaf2 { animation: foldAnim 2.5s infinite ease both; animation-delay: 0.24s; }
+.cube-folding .leaf3 { background: var(--secondary) !important; animation: foldAnim 2.5s infinite ease both; animation-delay: 0.36s; }
+.cube-folding .leaf4 { animation: foldAnim 2.5s infinite ease both; animation-delay: 0.48s; }
+.loading-text { display: block; text-align: center; margin-top: 24px; color: var(--text-muted); font-size: 13px; letter-spacing: 3px; font-family: var(--font-heading); }
+
+@keyframes cubeFold {
+  0%,10% { transform: rotateX(0) rotateY(0); }
+  25%,35% { transform: rotateX(0) rotateY(-90deg); }
+  50%,60% { transform: rotateX(-90deg) rotateY(-90deg); }
+  75%,85% { transform: rotateX(-90deg) rotateY(-180deg); }
+  100% { transform: rotateX(0) rotateY(-180deg); }
+}
+@keyframes foldAnim {
+  0%,10% { opacity: 1; transform: rotateX(90deg) rotateY(0); }
+  25%,35% { opacity: 1; transform: rotateX(0) rotateY(0); }
+  50%,60% { opacity: 1; transform: rotateX(0) rotateY(90deg); }
+  75%,85% { opacity: 1; transform: rotateX(0) rotateY(180deg); }
+  100% { opacity: 1; transform: rotateX(0) rotateY(0); }
+}
+
+/* ========== LOADING BAR ========== */
+.loading-bar {
+  position: fixed; top: 0; left: 0; width: 0; height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  z-index: 9999; border-radius: 0 2px 2px 0; box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* ========== TOAST ========== */
+.toast {
+  position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+  padding: 14px 28px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500;
+  z-index: 600; opacity: 0; pointer-events: none; white-space: nowrap;
+  backdrop-filter: blur(12px); border: 1px solid;
+}
+.toast.success { background: rgba(0,184,148,0.15); color: var(--green); border-color: rgba(0,184,148,0.3); }
+.toast.error { background: rgba(214,48,49,0.15); color: #ff6b6b; border-color: rgba(214,48,49,0.3); }
+
+/* ========== LOGIN ========== */
+#login {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--dark-bg);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.login-container {
+  text-align: center; width: 400px; position: relative; z-index: 2;
+}
+
+.login-logo-wrap {
+  width: 80px; height: 80px; margin: 0 auto 24px; position: relative;
+}
+
+.login-logo {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 22px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 32px var(--primary-glow); position: relative; z-index: 1;
+}
+
+.login-logo svg { width: 40px; height: 40px; fill: white; }
+
+.login-title {
+  font-family: var(--font-heading);
+  font-size: 28px; font-weight: 700; color: var(--text-light);
+  margin-bottom: 8px; letter-spacing: 2px;
+}
+.login-title span { color: var(--secondary); }
+
+.login-subtitle {
+  font-size: 14px; color: var(--text-muted); margin-bottom: 36px; line-height: 1.6;
+}
+
 .login-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 32px;
-  background: var(--blue-6);
-  color: white;
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  box-shadow: 0 4px 12px rgba(22,93,255,0.3);
-  width: 100%;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 36px; border: none;
+  border-radius: var(--radius-pill); font-size: 15px; font-weight: 600;
+  cursor: pointer; width: 100%; justify-content: center; position: relative; overflow: hidden;
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white; box-shadow: 0 4px 20px var(--primary-glow);
+  transition: var(--transition);
 }
-
-.login-btn:hover { background: var(--blue-5); }
+.login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--primary-glow); }
 .login-btn:active { transform: scale(0.98); }
-
-.login-btn svg { width: 20px; height: 20px; fill: white; flex-shrink: 0; }
-
-.login-btn .ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.35);
-  transform: scale(0);
-  pointer-events: none;
-}
+.login-btn svg { width: 20px; height: 20px; fill: white; }
 
 .login-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0;
-  color: var(--gray-40);
-  font-size: 12px;
+  display: flex; align-items: center; gap: 12px;
+  margin: 20px 0; color: var(--dark-border); font-size: 12px;
+}
+.login-divider::before, .login-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--dark-border);
 }
 
-.login-divider::before,
-.login-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--gray-20);
+.admin-toggle {
+  background: none; border: 1px solid var(--dark-border);
+  color: var(--text-muted); font-size: 13px; cursor: pointer;
+  padding: 10px 20px; border-radius: var(--radius-pill);
+  font-family: var(--font-body); transition: var(--transition);
 }
+.admin-toggle:hover { border-color: var(--primary); color: var(--text-light); }
 
-.admin-login-toggle {
-  background: none;
-  border: none;
-  color: var(--gray-60);
-  font-size: 13px;
-  cursor: pointer;
-  padding: 4px;
-  font-family: inherit;
-  transition: color 0.2s;
+.admin-form {
+  margin-top: 16px; display: none;
 }
-
-.admin-login-toggle:hover { color: var(--blue-6); }
-
-.admin-login-form {
-  margin-top: 16px;
-  display: none;
-}
-
-.admin-login-form.show { display: block; }
+.admin-form.show { display: block; }
 
 .admin-input {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--gray-20);
-  border-radius: var(--radius);
-  font-size: 14px;
-  color: var(--gray-95);
-  background: var(--white);
-  outline: none;
-  font-family: inherit;
-  transition: border-color 0.2s;
+  width: 100%; padding: 14px 18px;
+  border: 1px solid var(--dark-border); border-radius: var(--radius-pill);
+  font-size: 14px; color: var(--text-light); background: var(--dark-card);
+  outline: none; font-family: var(--font-body); transition: var(--transition);
 }
+.admin-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
 
-.admin-input:focus { border-color: var(--blue-6); box-shadow: 0 0 0 3px var(--blue-0); }
-
-.admin-submit-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--gray-95);
-  color: white;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.2s;
+.admin-submit {
+  width: 100%; padding: 14px; margin-top: 12px;
+  border: none; border-radius: var(--radius-pill);
+  background: var(--dark-surface); color: var(--text-light);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: var(--font-body); transition: var(--transition);
 }
+.admin-submit:hover { background: var(--primary); }
 
-.admin-submit-btn:hover { background: #2b2f38; }
+.login-error { color: #ff6b6b; font-size: 12px; margin-top: 10px; min-height: 18px; }
+.login-footer { margin-top: 36px; font-size: 12px; color: var(--dark-border); }
 
-.login-error {
-  color: var(--red-6);
-  font-size: 12px;
-  margin-top: 10px;
-  min-height: 18px;
-}
-
-.login-footer {
-  margin-top: 36px;
-  font-size: 12px;
-  color: var(--gray-40);
-}
-
-/* ============ DASHBOARD ============ */
+/* ========== DASHBOARD LAYOUT ========== */
 #dashboard { display: none; min-height: 100vh; }
 
-/* Top bar */
-.topbar {
-  background: var(--white);
-  border-bottom: 1px solid var(--gray-20);
-  padding: 0 32px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+.dashboard-layout {
+  display: flex; min-height: 100vh; position: relative; z-index: 1;
 }
 
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* Sidebar */
+.sidebar {
+  width: 240px; background: var(--dark-card);
+  border-right: 1px solid var(--dark-border); padding: 24px 16px;
+  display: flex; flex-direction: column; position: fixed; top: 0; left: 0;
+  height: 100vh; z-index: 50; backdrop-filter: blur(10px);
 }
 
-.topbar-logo {
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, var(--blue-6), var(--blue-4));
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.sidebar-brand {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding: 0 8px;
 }
-
-.topbar-logo svg { width: 14px; height: 14px; fill: white; }
-
-.topbar-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--gray-95);
+.sidebar-logo {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px var(--primary-glow);
 }
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--green-5);
-  display: inline-block;
-  margin-left: 8px;
+.sidebar-logo svg { width: 18px; height: 18px; fill: white; }
+.sidebar-brand-text {
+  font-family: var(--font-heading); font-size: 16px; font-weight: 600;
+  letter-spacing: 1px;
 }
+.sidebar-brand-text span { color: var(--secondary); }
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.sidebar-menu { flex: 1; }
+.sidebar-label {
+  font-size: 10px; color: var(--text-gray); text-transform: uppercase;
+  letter-spacing: 2px; padding: 0 8px; margin-bottom: 12px;
 }
+.sidebar-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: var(--radius); cursor: pointer;
+  color: var(--text-muted); transition: var(--transition); font-size: 13px; font-weight: 500;
+  text-decoration: none; margin-bottom: 2px;
+}
+.sidebar-item:hover, .sidebar-item.active {
+  background: rgba(108,92,231,0.12); color: var(--text-light);
+}
+.sidebar-item.active { border-left: 3px solid var(--primary); }
+.sidebar-item svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: default;
+.sidebar-user {
+  padding: 16px; border-top: 1px solid var(--dark-border); display: flex;
+  align-items: center; gap: 12px; margin-top: auto;
 }
+.sidebar-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 14px; font-weight: 700; flex-shrink: 0;
+  background-size: cover;
+}
+.sidebar-user-info { flex: 1; min-width: 0; }
+.sidebar-user-name { font-size: 13px; font-weight: 600; color: var(--text-light); }
+.sidebar-user-role { font-size: 11px; color: var(--text-muted); }
 
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--blue-5), var(--blue-6));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 13px;
-  font-weight: 600;
+.sidebar-logout {
+  padding: 8px 12px; border: 1px solid var(--dark-border); border-radius: var(--radius-pill);
+  background: transparent; color: var(--text-gray); font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: var(--transition); font-family: var(--font-body);
 }
-
-.user-name {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--gray-80);
-}
-
-.user-badge {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 3px;
-  background: var(--blue-1);
-  color: var(--blue-6);
-}
-
-.logout-btn {
-  padding: 6px 12px;
-  border: 1px solid var(--gray-20);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  color: var(--gray-60);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
-}
-
-.logout-btn:hover {
-  border-color: var(--red-6);
-  color: var(--red-6);
-  background: #FFF1F0;
-}
+.sidebar-logout:hover { border-color: var(--red); color: #ff6b6b; background: rgba(214,48,49,0.08); }
 
 /* Main content */
-.main { padding: 32px; max-width: 1200px; margin: 0 auto; }
+.main-content {
+  flex: 1; margin-left: 240px; padding: 32px; min-height: 100vh;
+}
 
 .page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 28px;
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px;
 }
 
 .page-header-left h1 {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--gray-95);
-  letter-spacing: -0.3px;
+  font-family: var(--font-heading);
+  font-size: 22px; font-weight: 700; letter-spacing: 1px;
 }
-
-.page-header-left p {
-  font-size: 13px;
-  color: var(--gray-60);
-  margin-top: 4px;
-}
+.page-header-left p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 
 .add-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: var(--blue-6);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(22,93,255,0.25);
-  font-family: inherit;
-  position: relative;
-  overflow: hidden;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px; border: none;
+  border-radius: var(--radius-pill); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font-body); position: relative; overflow: hidden;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white; box-shadow: 0 4px 16px var(--primary-glow);
+  transition: var(--transition);
 }
-
-.add-btn:hover { background: var(--blue-5); box-shadow: 0 4px 12px rgba(22,93,255,0.3); }
+.add-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--primary-glow); }
 .add-btn:active { transform: scale(0.97); }
-
-.add-btn .ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.3);
-  transform: scale(0);
-  pointer-events: none;
-}
+.add-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.5; }
 
 /* Cards grid */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-  min-height: 100px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
 }
 
 .card {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  border: 1px solid var(--gray-20);
-  cursor: pointer;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
-  position: relative;
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
-  display: block;
+  background: var(--dark-card); border-radius: var(--radius-lg);
+  padding: 24px; border: 1px solid var(--dark-border);
+  cursor: pointer; position: relative; overflow: hidden;
+  text-decoration: none; color: inherit; display: block;
+  transition: var(--transition); backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-card);
 }
 
 .card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--blue-6);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card:hover {
-  border-color: var(--blue-5);
-  box-shadow: var(--shadow);
-  transform: translateY(-3px);
+  border-color: var(--primary); transform: translateY(-4px);
+  box-shadow: var(--shadow-glow);
 }
-
 .card:hover::before { transform: scaleX(1); }
 
 .card-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius);
-  background: var(--blue-0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-  transition: background 0.2s, transform 0.2s;
+  width: 44px; height: 44px; border-radius: var(--radius);
+  background: rgba(108,92,231,0.12); display: flex;
+  align-items: center; justify-content: center; margin-bottom: 16px;
+  transition: var(--transition);
 }
+.card:hover .card-icon { background: rgba(108,92,231,0.2); transform: scale(1.05) rotate(-3deg); }
+.card-icon svg { width: 22px; height: 22px; fill: var(--primary); }
 
-.card:hover .card-icon { background: var(--blue-1); transform: scale(1.05); }
-
-.card-icon svg { width: 20px; height: 20px; fill: var(--blue-6); }
-
-.card-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--gray-95);
-  margin-bottom: 4px;
-}
-
-.card-url {
-  font-size: 12px;
-  color: var(--gray-40);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.card-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--text-light); }
+.card-url { font-size: 12px; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .card-delete {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: all 0.15s;
+  position: absolute; top: 12px; right: 12px; width: 28px; height: 28px;
+  border-radius: 50%; border: none; background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: var(--transition); z-index: 2;
 }
-
 .card:hover .card-delete { opacity: 1; }
-.card-delete:hover { background: #FFF1F0; transform: scale(1.1); }
-.card-delete svg { width: 14px; height: 14px; fill: var(--red-6); }
+.card-delete:hover { background: rgba(214,48,49,0.15); transform: scale(1.1); }
+.card-delete svg { width: 14px; height: 14px; fill: #ff6b6b; }
 
 .readonly-badge {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  font-size: 10px;
-  color: var(--gray-40);
+  position: absolute; top: 14px; right: 14px;
+  font-size: 10px; color: var(--text-gray); padding: 3px 10px;
+  border: 1px solid var(--dark-border); border-radius: var(--radius-pill);
 }
 
 /* Empty state */
 .empty-state {
-  text-align: center;
-  padding: 80px 20px;
-  color: var(--gray-60);
-  grid-column: 1 / -1;
+  text-align: center; padding: 80px 20px; color: var(--text-muted); grid-column: 1 / -1;
 }
-
 .empty-state-icon {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 20px;
-  background: var(--gray-10);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 72px; height: 72px; margin: 0 auto 20px;
+  background: rgba(108,92,231,0.08); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
 }
+.empty-state-icon svg { width: 32px; height: 32px; fill: var(--text-gray); }
+.empty-state h3 { font-size: 16px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+.empty-state p { font-size: 13px; }
 
-.empty-state-icon svg { width: 32px; height: 32px; fill: var(--gray-40); }
-
-.empty-state h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--gray-80);
-  margin-bottom: 8px;
-}
-
-.empty-state p {
-  font-size: 13px;
-  margin-bottom: 4px;
-}
-
-/* ============ MODAL ============ */
+/* ========== MODAL ========== */
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(4px);
-  z-index: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+  z-index: 500; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
 }
-
 .modal-overlay.active { pointer-events: auto; }
 
 .modal {
-  background: var(--white);
-  border-radius: var(--radius-xl);
-  padding: 32px;
-  width: 400px;
-  max-width: calc(100vw - 32px);
-  box-shadow: var(--shadow-xl);
-  transform: scale(0.9) translateY(10px);
-  opacity: 0;
+  background: var(--dark-card); border-radius: var(--radius-xl);
+  padding: 32px; width: 420px; max-width: calc(100vw - 32px);
+  border: 1px solid var(--dark-border);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  transform: scale(0.9) translateY(10px); opacity: 0;
 }
 
 .modal-title {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 24px;
-  color: var(--gray-95);
+  font-family: var(--font-heading);
+  font-size: 18px; font-weight: 600; margin-bottom: 24px;
+  color: var(--text-light); letter-spacing: 1px;
 }
 
 .form-group { margin-bottom: 20px; }
 
 .form-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--gray-80);
-  margin-bottom: 8px;
+  display: block; font-size: 12px; font-weight: 500;
+  color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px;
 }
 
 .form-input {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid var(--gray-20);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  color: var(--gray-95);
-  background: var(--white);
-  transition: border-color 0.15s;
-  outline: none;
-  font-family: inherit;
+  width: 100%; padding: 12px 16px;
+  border: 1px solid var(--dark-border); border-radius: var(--radius);
+  font-size: 14px; color: var(--text-light); background: var(--dark-surface);
+  outline: none; font-family: var(--font-body); transition: var(--transition);
 }
+.form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+.form-input::placeholder { color: var(--dark-border); }
 
-.form-input:focus { border-color: var(--blue-6); box-shadow: 0 0 0 3px var(--blue-0); }
-.form-input::placeholder { color: var(--gray-40); }
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 28px;
-}
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 28px; }
 
 .btn-cancel {
-  padding: 10px 20px;
-  border: 1px solid var(--gray-20);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  color: var(--gray-80);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
+  padding: 12px 24px; border: 1px solid var(--dark-border);
+  border-radius: var(--radius-pill); background: transparent;
+  color: var(--text-muted); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: var(--transition); font-family: var(--font-body);
 }
-
-.btn-cancel:hover { background: var(--gray-5); border-color: var(--gray-40); }
+.btn-cancel:hover { border-color: var(--text-gray); color: var(--text-light); }
 
 .btn-primary {
-  padding: 10px 24px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: var(--blue-6);
-  color: white;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
-  position: relative;
-  overflow: hidden;
+  padding: 12px 28px; border: none; border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: var(--transition); font-family: var(--font-body);
+  box-shadow: 0 4px 16px var(--primary-glow);
 }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--primary-glow); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-.btn-primary:hover { background: var(--blue-5); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-/* Toast */
-.toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 24px;
-  border-radius: var(--radius);
-  font-size: 13px;
-  font-weight: 500;
-  z-index: 600;
-  opacity: 0;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-.toast.success {
-  background: var(--green-1);
-  color: var(--green-5);
-  border: 1px solid #B7F8BD;
-}
-
-.toast.error {
-  background: #FFF1F0;
-  color: var(--red-6);
-  border: 1px solid #FFCFCF;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--dark-bg); }
+::-webkit-scrollbar-thumb { background: var(--dark-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-gray); }
 
 /* Responsive */
-@media (max-width: 640px) {
-  .main { padding: 20px 16px; }
-  .topbar { padding: 0 16px; }
+@media (max-width: 768px) {
+  .sidebar { width: 100%; height: auto; position: relative; padding: 16px; }
+  .sidebar-menu { display: none; }
+  .sidebar-user { border-top: none; padding: 0; margin-top: 0; }
+  .main-content { margin-left: 0; padding: 20px 16px; }
   .page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
   .cards-grid { grid-template-columns: 1fr; }
-  .user-name, .user-badge { display: none; }
+}
+
+@media (max-width: 992px) {
+  .sidebar { width: 200px; }
+  .main-content { margin-left: 200px; }
+  .cards-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -696,7 +468,28 @@ body {
 </head>
 <body>
 
-<!-- Loading bar -->
+<!-- Floating Background Shapes -->
+<div class="floating-shapes">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+
+<!-- Preloader -->
+<div class="preloader" id="preloader">
+  <div>
+    <div class="cube-folding">
+      <span class="leaf1"></span>
+      <span class="leaf2"></span>
+      <span class="leaf3"></span>
+      <span class="leaf4"></span>
+    </div>
+    <span class="loading-text">LOADING</span>
+  </div>
+</div>
+
+<!-- Loading Bar -->
 <div class="loading-bar" id="loadingBar"></div>
 
 <!-- Toast -->
@@ -710,57 +503,66 @@ body {
         <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
       </div>
     </div>
-    <h1 class="login-title">工作台</h1>
+    <h1 class="login-title">W<span>ORK</span>BENCH</h1>
     <p class="login-subtitle">统一管理你的常用工具与链接<br/>提升工作效率</p>
     <button class="login-btn" id="loginBtn">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
       飞书登录
     </button>
     <div class="login-divider">其他方式</div>
-    <button class="admin-login-toggle" id="adminToggle">管理员密钥登录 &rarr;</button>
-    <div class="admin-login-form" id="adminForm">
+    <button class="admin-toggle" id="adminToggle">管理员密钥登录</button>
+    <div class="admin-form" id="adminForm">
       <input class="admin-input" id="adminKeyInput" type="password" placeholder="输入管理员密钥" autocomplete="off">
-      <button class="admin-submit-btn" id="adminSubmit">验证身份</button>
+      <button class="admin-submit" id="adminSubmit">验证身份</button>
       <div class="login-error" id="loginError"></div>
     </div>
-    <p class="login-footer" id="loginFooter">飞书 OAuth 登录 &middot; 安全可靠</p>
+    <p class="login-footer">飞书 OAuth 登录 · 安全可靠</p>
   </div>
 </div>
 
 <!-- ===== DASHBOARD ===== -->
 <div id="dashboard">
-  <header class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-logo">
-        <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">
+          <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+        </div>
+        <span class="sidebar-brand-text">W<span>ORK</span>BENCH</span>
       </div>
-      <span class="topbar-title">工作台</span>
-      <span class="status-dot" id="statusDot"></span>
-    </div>
-    <div class="topbar-right">
-      <div class="user-info">
-        <div class="user-avatar" id="userAvatar">管</div>
-        <span class="user-name" id="userName">管理员</span>
-        <span class="user-badge" id="userBadge">管理</span>
+      <div class="sidebar-menu">
+        <div class="sidebar-label">导航</div>
+        <a class="sidebar-item active" href="#">
+          <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+          我的工具
+        </a>
       </div>
-      <button class="logout-btn" id="logoutBtn">退出</button>
-    </div>
-  </header>
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="userAvatar">管</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="userName">管理员</div>
+          <div class="sidebar-user-role" id="userBadge">管理员</div>
+        </div>
+        <button class="sidebar-logout" id="logoutBtn">退出</button>
+      </div>
+    </aside>
 
-  <main class="main">
-    <div class="page-header">
-      <div class="page-header-left">
-        <h1>我的工具</h1>
-        <p>快速访问常用的系统与链接</p>
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>我的工具</h1>
+          <p>快速访问常用的系统与链接</p>
+        </div>
+        <button class="add-btn" id="addBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          添加工具
+        </button>
       </div>
-      <button class="add-btn" id="addBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        添加工具
-      </button>
-    </div>
-
-    <div class="cards-grid" id="cardsGrid"></div>
-  </main>
+      <div class="cards-grid" id="cardsGrid"></div>
+    </main>
+  </div>
 </div>
 
 <!-- ===== MODAL ===== -->
@@ -796,78 +598,47 @@ const API_BASE = window.location.port === '3001' || window.location.port === '30
 /* ============ GSAP Animations ============ */
 const mm = gsap.matchMedia()
 
+function hidePreloader() {
+  gsap.to('.preloader', { opacity: 0, duration: 0.5, delay: 0.3, ease: 'power2.out',
+    onComplete: () => { document.getElementById('preloader').style.display = 'none' }
+  })
+}
+
 function animateLoginPage() {
+  hidePreloader()
   mm.add('(prefers-reduced-motion: no-preference)', () => {
     gsap.to('.login-logo', {
-      scale: 1.03,
-      duration: 2,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
+      scale: 1.04, duration: 2.5, repeat: -1, yoyo: true, ease: 'sine.inOut',
     })
-    gsap.from('.login-container', {
-      y: 30,
-      opacity: 0,
-      duration: 0.6,
-      ease: 'power3.out',
-    })
+    gsap.from('.login-container', { y: 40, opacity: 0, duration: 0.7, ease: 'power3.out', delay: 0.2 })
   })
 }
 
 function loginTransition() {
-  // Decorative GSAP - non-blocking
-  gsap.to('#loadingBar', { width: '60%', duration: 0.6, ease: 'power2.out' })
-
-  // Switch views directly (GSAP animation is decorative-only)
+  gsap.to('#loadingBar', { width: '60%', duration: 0.5, ease: 'power2.out' })
   document.getElementById('login').style.display = 'none'
   document.getElementById('dashboard').style.display = 'block'
   gsap.to('#loadingBar', { width: '100%', duration: 0.2, opacity: 0, delay: 0.1 })
-
   enterDashboard()
   loadAndRender()
 }
 
 function enterDashboard() {
   mm.add('(prefers-reduced-motion: no-preference)', () => {
-    const tl = gsap.timeline()
-    tl.from('#dashboard', { opacity: 0, duration: 0.2 })
-      .from('.topbar', { y: -20, opacity: 0, duration: 0.35, ease: 'power2.out' }, '-=0.1')
-      .from('.page-header', { y: 16, opacity: 0, duration: 0.3, ease: 'power2.out' }, '-=0.15')
-      .add(animateCards, '-=0.05')
-
-    gsap.to('#statusDot', {
-      scale: 1.4,
-      opacity: 0.6,
-      duration: 1.5,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-    })
+    gsap.from('.sidebar', { x: -60, opacity: 0, duration: 0.4, ease: 'power2.out' })
+    gsap.from('.page-header', { y: 20, opacity: 0, duration: 0.35, ease: 'power2.out', delay: 0.1 })
   })
 }
 
 function animateCards() {
   mm.add('(prefers-reduced-motion: no-preference)', () => {
-    gsap.from('.card', {
-      opacity: 0,
-      y: 24,
-      duration: 0.5,
-      stagger: 0.07,
-      ease: 'power3.out',
-      clearProps: 'transform',
-    })
+    gsap.from('.card', { opacity: 0, y: 30, duration: 0.5, stagger: 0.07, ease: 'power3.out', clearProps: 'transform' })
   })
 }
 
 function animateEmptyState() {
   mm.add('(prefers-reduced-motion: no-preference)', () => {
-    gsap.to('.empty-state-icon', {
-      y: -6,
-      duration: 2.5,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-    })
+    gsap.to('.empty-state-icon', { y: -8, duration: 2.5, repeat: -1, yoyo: true, ease: 'sine.inOut' })
   })
 }
 
@@ -875,78 +646,54 @@ function openModalAnimated() {
   const overlay = document.getElementById('modalOverlay')
   const modal = document.querySelector('.modal')
   overlay.classList.add('active')
-
   mm.add('(prefers-reduced-motion: no-preference)', () => {
     gsap.to(overlay, { opacity: 1, duration: 0.2, ease: 'power2.out' })
     gsap.fromTo(modal,
-      { scale: 0.9, y: 10, opacity: 0 },
+      { scale: 0.9, y: 15, opacity: 0 },
       { scale: 1, y: 0, opacity: 1, duration: 0.35, ease: 'back.out(1.7)' }
     )
   })
-
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    overlay.style.opacity = 1
-    modal.style.opacity = 1
-    modal.style.transform = 'scale(1) translateY(0)'
+    overlay.style.opacity = 1; modal.style.opacity = 1; modal.style.transform = 'scale(1) translateY(0)'
   }
-
   setTimeout(() => document.getElementById('inputName').focus(), 150)
 }
 
 function closeModalAnimated() {
   const overlay = document.getElementById('modalOverlay')
   const modal = document.querySelector('.modal')
-
   mm.add('(prefers-reduced-motion: no-preference)', () => {
     gsap.to(modal, { scale: 0.9, y: 10, opacity: 0, duration: 0.2, ease: 'power2.in',
       onComplete: () => {
         overlay.classList.remove('active')
-        modal.style.opacity = ''
-        modal.style.transform = ''
+        modal.style.opacity = ''; modal.style.transform = ''
       }
     })
     gsap.to(overlay, { opacity: 0, duration: 0.15, delay: 0.05 })
   })
-
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    overlay.classList.remove('active')
-  }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { overlay.classList.remove('active') }
 }
 
-/* ============ Ripple effect ============ */
 function createRipple(e, el) {
   const rect = el.getBoundingClientRect()
   const size = Math.max(rect.width, rect.height) * 1.5
-  const x = e.clientX - rect.left - size / 2
-  const y = e.clientY - rect.top - size / 2
   const ripple = document.createElement('span')
-  ripple.className = 'ripple'
-  ripple.style.width = ripple.style.height = size + 'px'
-  ripple.style.left = x + 'px'
-  ripple.style.top = y + 'px'
+  ripple.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,0.25);transform:scale(0);pointer-events:none;width:'+size+'px;height:'+size+'px;left:'+(e.clientX-rect.left-size/2)+'px;top:'+(e.clientY-rect.top-size/2)+'px'
   el.appendChild(ripple)
-  gsap.to(ripple, { scale: 2.5, opacity: 0, duration: 0.5, ease: 'power2.out',
-    onComplete: () => ripple.remove()
-  })
+  gsap.to(ripple, { scale: 2.5, opacity: 0, duration: 0.5, ease: 'power2.out', onComplete: () => ripple.remove() })
 }
 
 /* ============ Toast ============ */
 function showToast(msg, type) {
   const el = document.getElementById('toast')
-  el.textContent = msg
-  el.className = 'toast ' + type
-
+  el.textContent = msg; el.className = 'toast ' + type
   mm.add('(prefers-reduced-motion: no-preference)', () => {
     gsap.killTweensOf(el)
     gsap.set(el, { opacity: 0, y: -10 })
     gsap.to(el, { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' })
     gsap.to(el, { opacity: 0, y: -10, duration: 0.25, ease: 'power2.in', delay: 2.5 })
   })
-
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    el.style.opacity = 1
-    setTimeout(() => { el.style.opacity = 0 }, 2500)
-  }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { el.style.opacity = 1; setTimeout(() => { el.style.opacity = 0 }, 2500) }
 }
 
 /* ============ API ============ */
@@ -959,16 +706,10 @@ async function fetchItems() {
 async function addItem(name, url) {
   const res = await fetch(API_BASE + '/items', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + getToken(),
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
     body: JSON.stringify({ name, url }),
   })
-  if (!res.ok) {
-    const err = await res.json()
-    throw new Error(err.error || '添加失败')
-  }
+  if (!res.ok) { const err = await res.json(); throw new Error(err.error || '添加失败') }
   return await res.json()
 }
 
@@ -977,167 +718,87 @@ async function deleteItem(id) {
     method: 'DELETE',
     headers: { 'Authorization': 'Bearer ' + getToken() },
   })
-  if (!res.ok) {
-    const err = await res.json()
-    throw new Error(err.error || '删除失败')
-  }
+  if (!res.ok) { const err = await res.json(); throw new Error(err.error || '删除失败') }
 }
 
 /* ============ Render ============ */
-let itemsData = []
-
 async function loadAndRender() {
   const grid = document.getElementById('cardsGrid')
-
-  try {
-    itemsData = await fetchItems()
-  } catch (e) {
-    try {
-      const local = localStorage.getItem('workbench_items')
-      itemsData = local ? JSON.parse(local) : []
-    } catch { itemsData = [] }
-  }
+  try { itemsData = await fetchItems() }
+  catch { try { itemsData = JSON.parse(localStorage.getItem('workbench_items') || '[]') } catch { itemsData = [] } }
 
   if (!itemsData || itemsData.length === 0) {
     grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div><h3>还没有工具</h3><p>点击右上角「添加工具」开始添加</p></div>'
-    animateEmptyState()
-    return
+    animateEmptyState(); return
   }
 
   const admin = isAdmin()
-
   grid.innerHTML = itemsData.map(item => '<a class="card" href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer" data-id="' + item.id + '">' +
-    (admin
-      ? '<button class="card-delete" data-delete-id="' + item.id + '" title="删除" aria-label="删除 ' + escapeHtml(item.name) + '"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>'
-      : '<span class="readonly-badge">只读</span>'
-    ) +
+    (admin ? '<button class="card-delete" data-delete-id="' + item.id + '" title="删除" aria-label="删除 ' + escapeHtml(item.name) + '"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>' : '<span class="readonly-badge">只读</span>') +
     '<div class="card-icon"><svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg></div>' +
-    '<div class="card-name">' + escapeHtml(item.name) + '</div>' +
-    '<div class="card-url">' + escapeHtml(item.url) + '</div>' +
-  '</a>').join('')
+    '<div class="card-name">' + escapeHtml(item.name) + '</div><div class="card-url">' + escapeHtml(item.url) + '</div></a>').join('')
 
   if (admin) {
     grid.querySelectorAll('[data-delete-id]').forEach(btn => {
       btn.addEventListener('click', async (e) => {
-        e.preventDefault()
-        e.stopPropagation()
+        e.preventDefault(); e.stopPropagation()
         const id = btn.getAttribute('data-delete-id')
         const card = btn.closest('.card')
-
-        // Decorative GSAP (non-blocking)
-        gsap.to(card, {
-          scale: 0.9, opacity: 0, duration: 0.2, ease: 'power2.in',
-        })
-
-        // Use setTimeout to ensure execution (GSAP onComplete may not fire in some envs)
+        gsap.to(card, { scale: 0.9, opacity: 0, duration: 0.2, ease: 'power2.in' })
         setTimeout(async () => {
-          try {
-            await deleteItem(id)
-            showToast('已删除', 'success')
-            await loadAndRender()
-          } catch (err) {
-            showToast(err.message, 'error')
-            await loadAndRender()
-          }
+          try { await deleteItem(id); showToast('已删除', 'success'); await loadAndRender() }
+          catch (err) { showToast(err.message, 'error'); await loadAndRender() }
         }, 250)
       })
     })
   }
-
   animateCards()
 }
 
 function escapeHtml(s) {
-  const d = document.createElement('div')
-  d.textContent = s
-  return d.innerHTML
+  const d = document.createElement('div'); d.textContent = s; return d.innerHTML
 }
 
 /* ============ Login ============ */
-function feishuLogin() {
-  window.location.href = API_BASE.replace('/api', '') + '/api/auth/login'
-}
-
-function login() {
-  loginTransition()
-}
+function feishuLogin() { window.location.href = API_BASE.replace('/api', '') + '/api/auth/login' }
+function login() { loginTransition() }
 
 function adminLogin() {
   const key = document.getElementById('adminKeyInput').value.trim()
   const errEl = document.getElementById('loginError')
-
-  if (!key) {
-    errEl.textContent = '请输入管理员密钥'
-    return
-  }
-
-  localStorage.setItem(SESSION_STORE, key)
-  errEl.textContent = ''
-
-  fetchItems()
-    .then(() => { login() })
-    .catch(() => { login() })
+  if (!key) { errEl.textContent = '请输入管理员密钥'; return }
+  localStorage.setItem(SESSION_STORE, key); errEl.textContent = ''
+  fetchItems().then(() => login()).catch(() => login())
 }
 
 function logout() {
-  localStorage.removeItem(SESSION_STORE)
-  localStorage.removeItem(USER_STORE)
-
+  localStorage.removeItem(SESSION_STORE); localStorage.removeItem(USER_STORE)
   document.getElementById('dashboard').style.display = 'none'
   document.getElementById('login').style.display = 'flex'
-  document.getElementById('login').style.opacity = 1
 }
 
 /* ============ Modal ============ */
-function openModal() {
-  document.getElementById('inputName').value = ''
-  document.getElementById('inputUrl').value = ''
-  openModalAnimated()
-}
-
-function closeModal() {
-  closeModalAnimated()
-}
+function openModal() { document.getElementById('inputName').value = ''; document.getElementById('inputUrl').value = ''; openModalAnimated() }
+function closeModal() { closeModalAnimated() }
 
 async function handleAdd() {
-  if (!isAdmin()) {
-    showToast('只有管理员才能添加工具', 'error')
-    return
-  }
-
+  if (!isAdmin()) { showToast('只有管理员才能添加工具', 'error'); return }
   const name = document.getElementById('inputName').value.trim()
   let url = document.getElementById('inputUrl').value.trim()
-
-  if (!name || !url) {
-    showToast('请填写工具名称和链接', 'error')
-    return
-  }
-
+  if (!name || !url) { showToast('请填写工具名称和链接', 'error'); return }
   if (!/^https?:\/\//i.test(url)) url = 'https://' + url
   try { new URL(url) } catch { showToast('请输入有效的链接地址', 'error'); return }
-
   const btn = document.getElementById('modalSubmit')
-  btn.disabled = true
-  btn.textContent = '添加中...'
-
-  try {
-    await addItem(name, url)
-    closeModal()
-    showToast('添加成功', 'success')
-    await loadAndRender()
-  } catch (err) {
-    showToast(err.message, 'error')
-  } finally {
-    btn.disabled = false
-    btn.textContent = '添加'
-  }
+  btn.disabled = true; btn.textContent = '添加中...'
+  try { await addItem(name, url); closeModal(); showToast('添加成功', 'success'); await loadAndRender() }
+  catch (err) { showToast(err.message, 'error') }
+  finally { btn.disabled = false; btn.textContent = '添加' }
 }
 
 /* ============ Init ============ */
 document.addEventListener('DOMContentLoaded', () => {
   animateLoginPage()
 
-  // Check URL params from Feishu OAuth callback
   const params = new URLSearchParams(window.location.search)
   const sessionFromUrl = params.get('session')
   const nameFromUrl = params.get('name')
@@ -1146,20 +807,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (sessionFromUrl) {
     localStorage.setItem(SESSION_STORE, sessionFromUrl)
-    const userInfo = { name: nameFromUrl || '管理员', avatar: avatarFromUrl || '' }
-    localStorage.setItem(USER_STORE, JSON.stringify(userInfo))
-    // Clean URL
+    localStorage.setItem(USER_STORE, JSON.stringify({ name: nameFromUrl || '管理员', avatar: avatarFromUrl || '' }))
     window.history.replaceState({}, '', '/')
   }
 
-  if (authError === 'not_admin') {
-    showToast('该飞书账号不是管理员，无法登录', 'error')
-  } else if (authError) {
-    showToast('登录失败：' + authError, 'error')
-  }
+  if (authError === 'not_admin') { showToast('该飞书账号不是管理员，无法登录', 'error') }
+  else if (authError) { showToast('登录失败：' + authError, 'error') }
 
   const user = getUser()
   if (isAdmin() && user) {
+    hidePreloader()
     document.getElementById('login').style.display = 'none'
     document.getElementById('dashboard').style.display = 'block'
     document.getElementById('loadingBar').style.width = '100%'
@@ -1167,64 +824,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarEl = document.getElementById('userAvatar')
     const nameEl = document.getElementById('userName')
     const badgeEl = document.getElementById('userBadge')
-    if (user.name) {
-      nameEl.textContent = user.name
-      avatarEl.textContent = user.name.charAt(0)
-      badgeEl.textContent = '管理员'
-    }
-    if (user.avatar) {
-      avatarEl.style.backgroundImage = 'url(' + user.avatar + ')'
-      avatarEl.style.backgroundSize = 'cover'
-      avatarEl.textContent = ''
-    }
-    enterDashboard()
-    loadAndRender()
+    if (user.name) { nameEl.textContent = user.name; avatarEl.textContent = user.name.charAt(0) }
+    if (user.avatar) { avatarEl.style.backgroundImage = 'url(' + user.avatar + ')'; avatarEl.style.backgroundSize = 'cover'; avatarEl.textContent = '' }
+    enterDashboard(); loadAndRender()
   }
 
   document.getElementById('loginBtn').addEventListener('click', (e) => {
-    createRipple(e, e.currentTarget)
-    setTimeout(feishuLogin, 300)
+    createRipple(e, e.currentTarget); setTimeout(feishuLogin, 300)
   })
-
   document.getElementById('adminToggle').addEventListener('click', () => {
-    const form = document.getElementById('adminForm')
-    const toggle = document.getElementById('adminToggle')
-    form.classList.toggle('show')
-    if (form.classList.contains('show')) {
-      toggle.innerHTML = '&larr; 隐藏密钥登录'
-    } else {
-      toggle.innerHTML = '管理员密钥登录 &rarr;'
-    }
+    document.getElementById('adminForm').classList.toggle('show')
   })
-
   document.getElementById('adminSubmit').addEventListener('click', adminLogin)
-  document.getElementById('adminKeyInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') adminLogin()
-  })
-
+  document.getElementById('adminKeyInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') adminLogin() })
   document.getElementById('logoutBtn').addEventListener('click', logout)
   document.getElementById('addBtn').addEventListener('click', (e) => {
     createRipple(e, e.currentTarget)
-    if (!isAdmin()) {
-      showToast('只有管理员才能管理工具', 'error')
-      return
-    }
+    if (!isAdmin()) { showToast('只有管理员才能管理工具', 'error'); return }
     setTimeout(openModal, 150)
   })
-
   document.getElementById('modalCancel').addEventListener('click', closeModal)
   document.getElementById('modalSubmit').addEventListener('click', handleAdd)
-  document.getElementById('modalOverlay').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeModal()
-  })
-  document.getElementById('inputUrl').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') handleAdd()
-  })
+  document.getElementById('modalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal() })
+  document.getElementById('inputUrl').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleAdd() })
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      const overlay = document.getElementById('modalOverlay')
-      if (overlay.classList.contains('active')) closeModal()
-    }
+    if (e.key === 'Escape') { const overlay = document.getElementById('modalOverlay'); if (overlay.classList.contains('active')) closeModal() }
   })
 })
 </script>
