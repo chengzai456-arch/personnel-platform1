@@ -1,4 +1,4 @@
-import { db } from '../lib/supabase.js'
+import { db } from '../../lib/supabase.js'
 import crypto from 'crypto'
 
 const FEISHU_APP_ID = process.env.FEISHU_APP_ID
