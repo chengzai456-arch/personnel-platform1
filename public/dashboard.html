@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="cache-control" content="no-cache, no-store, must-validate">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+<title>数据面板 - Workbench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #4f46e5;
+  --primary-light: #6366f1;
+  --primary-dark: #3730a3;
+  --primary-subtle: #eef2ff;
+  --accent: #06b6d4;
+  --accent-subtle: #ecfeff;
+  --bg: #ffffff;
+  --bg-warm: #f8fafc;
+  --bg-card: #ffffff;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --success: #10b981;
+  --success-subtle: #ecfdf5;
+  --warning: #f59e0b;
+  --warning-subtle: #fffbeb;
+  --error: #ef4444;
+  --error-subtle: #fef2f2;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 50px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.15);
+  --font-body: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--bg-warm);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* Loading Bar */
+.loading-bar { position: fixed; top: 0; left: 0; width: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--accent)); z-index: 9999; border-radius: 0 2px 2px 0; }
+
+/* Toast */
+.toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; z-index: 600; opacity: 0; pointer-events: none; white-space: nowrap; box-shadow: var(--shadow-md); }
+.toast.success { background: var(--success-subtle); color: #059669; border: 1px solid #a7f3d0; }
+.toast.error { background: var(--error-subtle); color: #dc2626; border: 1px solid #fecaca; }
+
+/* ============ TOPBAR ============ */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-light);
+  padding: 0 16px; height: 56px;
+  display: flex; align-items: center; gap: 8px;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.topbar-logo { width: 28px; height: 28px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.topbar-logo svg { width: 14px; height: 14px; fill: white; }
+.topbar-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; white-space: nowrap; }
+.topbar-accent { color: var(--primary); }
+.topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.topbar-user { display: flex; align-items: center; gap: 8px; cursor: default; }
+.topbar-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; }
+.topbar-name { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+.topbar-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--primary-subtle); color: var(--primary); }
+
+.btn-topbar-outline {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill); background: transparent;
+  color: var(--text-secondary); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font-body); transition: var(--transition);
+  text-decoration: none;
+}
+.btn-topbar-outline:hover { border-color: var(--primary); color: var(--primary); }
+.btn-topbar-outline svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+.btn-topbar-logout {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill); background: transparent;
+  color: var(--text-secondary); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font-body); transition: var(--transition);
+}
+.btn-topbar-logout:hover { border-color: var(--error); color: var(--error); background: var(--error-subtle); }
+
+/* ============ MAIN LAYOUT ============ */
+.main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+/* ============ TYPE BAR ============ */
+.type-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 24px;
+}
+.type-tabs { display: flex; gap: 4px; background: var(--border); padding: 3px; border-radius: var(--radius-pill); }
+.type-tab {
+  padding: 8px 24px; border: none; border-radius: var(--radius-pill);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: var(--font-body); transition: var(--transition);
+  background: transparent; color: var(--text-secondary);
+}
+.type-tab.active { background: white; color: var(--primary); box-shadow: var(--shadow-sm); }
+.type-tab:hover:not(.active) { color: var(--text); }
+
+.type-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.type-controls select {
+  padding: 8px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-pill);
+  font-size: 13px; color: var(--text); background: white; outline: none;
+  font-family: var(--font-body); cursor: pointer;
+}
+.type-controls select:focus { border-color: var(--primary); }
+
+.btn-primary-sm {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 20px; border: none; border-radius: var(--radius-pill);
+  background: var(--primary); color: white; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font-body); transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(79,70,229,0.25);
+}
+.btn-primary-sm:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn-primary-sm:active { transform: scale(0.97); }
+.btn-primary-sm svg { width: 14px; height: 14px; stroke: white; stroke-width: 2.5; fill: none; }
+
+/* ============ TAB NAV ============ */
+.panel-tabs {
+  display: flex; gap: 0; margin-bottom: 24px;
+  border-bottom: 2px solid var(--border); overflow-x: auto;
+}
+.panel-tab {
+  padding: 12px 24px; border: none; background: transparent;
+  font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; font-family: var(--font-body); white-space: nowrap;
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: var(--transition);
+}
+.panel-tab:hover { color: var(--text); }
+.panel-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+
+/* ============ CARDS ============ */
+.card {
+  background: var(--bg-card); border-radius: var(--radius-lg);
+  padding: 24px; border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm); margin-bottom: 20px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.card-title-text { font-size: 16px; font-weight: 700; color: var(--text); }
+
+/* KPI Cards Grid */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+}
+.kpi-card {
+  background: var(--bg-card); border-radius: var(--radius-lg);
+  padding: 24px; border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm); transition: var(--transition);
+}
+.kpi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.kpi-label { font-size: 13px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
+.kpi-value { font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; }
+.kpi-value span { font-size: 16px; font-weight: 600; color: var(--text-secondary); margin-left: 4px; }
+.kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+.kpi-accent { color: var(--primary); }
+.kpi-green { color: var(--success); }
+.kpi-warning { color: var(--warning); }
+.kpi-red { color: var(--error); }
+
+/* Stagger entry animation */
+.kpi-stagger { opacity: 0; transform: translateY(16px); }
+
+/* Charts row */
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.chart-container { position: relative; width: 100%; max-height: 320px; }
+.chart-container canvas { width: 100% !important; }
+
+/* ============ DATA TABLE ============ */
+.data-table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  text-align: left; padding: 10px 12px; background: var(--bg-warm);
+  color: var(--text-secondary); font-weight: 600; white-space: nowrap;
+  border-bottom: 2px solid var(--border);
+}
+.data-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border-light);
+  color: var(--text); white-space: nowrap;
+}
+.data-table tr:hover td { background: var(--primary-subtle); }
+.data-table .clickable { cursor: pointer; }
+
+.table-search {
+  display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.table-search input {
+  flex: 1; min-width: 200px; padding: 10px 16px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-pill);
+  font-size: 13px; color: var(--text); background: var(--bg);
+  outline: none; font-family: var(--font-body); transition: var(--transition);
+}
+.table-search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+
+.pagination {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-top: 16px;
+}
+.pagination button {
+  padding: 6px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill); background: white;
+  color: var(--text-secondary); font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--font-body); transition: var(--transition);
+}
+.pagination button:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination span { font-size: 13px; color: var(--text-muted); }
+
+/* Status badges */
+.badge-success { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; background: var(--success-subtle); color: #059669; }
+.badge-error { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; background: var(--error-subtle); color: #dc2626; }
+.badge-warning { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; background: var(--warning-subtle); color: #d97706; }
+.badge-neutral { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; background: var(--primary-subtle); color: var(--primary); }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 64px 20px; color: var(--text-secondary); }
+.empty-state-icon { width: 64px; height: 64px; margin: 0 auto 20px; background: var(--primary-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.empty-state-icon svg { width: 28px; height: 28px; fill: var(--primary); opacity: 0.4; }
+.empty-state h3 { font-size: 16px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+.empty-state p { font-size: 13px; }
+
+/* Loading skeleton */
+.skeleton { background: linear-gradient(90deg, var(--border-light) 25%, #e8e8ef 50%, var(--border-light) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ============ MODAL ============ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.4); backdrop-filter: blur(6px);
+  z-index: 500; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+}
+.modal-overlay.active { pointer-events: auto; }
+.modal {
+  background: var(--bg-card); border-radius: var(--radius-xl);
+  padding: 32px; width: 460px; max-width: calc(100vw - 32px);
+  box-shadow: var(--shadow-xl); border: 1px solid var(--border-light);
+  transform: scale(0.9) translateY(10px); opacity: 0;
+}
+.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+.modal-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
+.form-input {
+  width: 100%; padding: 12px 16px; border: 1.5px solid var(--border);
+  border-radius: var(--radius); font-size: 14px; color: var(--text);
+  background: var(--bg); outline: none; font-family: var(--font-body); transition: var(--transition);
+}
+.form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+.form-input::placeholder { color: var(--text-muted); }
+.form-select {
+  width: 100%; padding: 12px 16px; border: 1.5px solid var(--border);
+  border-radius: var(--radius); font-size: 14px; color: var(--text);
+  background: var(--bg); outline: none; font-family: var(--font-body); cursor: pointer;
+}
+.form-select:focus { border-color: var(--primary); }
+.upload-zone {
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  padding: 36px; text-align: center; cursor: pointer;
+  transition: all 0.2s; margin-bottom: 12px;
+}
+.upload-zone:hover, .upload-zone.dragover { border-color: var(--primary); background: var(--primary-subtle); }
+.upload-zone .hint { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+.btn-cancel {
+  padding: 10px 24px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill); background: transparent;
+  color: var(--text-secondary); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: var(--transition); font-family: var(--font-body);
+}
+.btn-cancel:hover { border-color: var(--text-muted); }
+.btn-primary {
+  padding: 10px 28px; border: none; border-radius: var(--radius-pill);
+  background: var(--primary); color: white; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: var(--transition); font-family: var(--font-body);
+  box-shadow: 0 2px 8px rgba(79,70,229,0.25);
+}
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-row { grid-template-columns: 1fr; }
+  .main { padding: 16px; }
+  .type-bar { flex-direction: column; align-items: stretch; }
+  .type-controls { justify-content: stretch; }
+  .type-controls select { flex: 1; }
+  .topbar-name, .topbar-badge { display: none; }
+  .panel-tabs { gap: 0; }
+  .panel-tab { padding: 10px 14px; font-size: 13px; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi-card { padding: 16px; }
+  .kpi-value { font-size: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Bar -->
+<div class="loading-bar" id="loadingBar"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== TOPBAR ===== -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="white"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.6)"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.6)"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="white"/></svg>
+    </div>
+    <span class="topbar-title">W<span class="topbar-accent">ORK</span>BENCH</span>
+  </div>
+  <div class="topbar-right">
+    <a href="/" class="btn-topbar-outline">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      返回工作台
+    </a>
+    <div class="topbar-user">
+      <div class="topbar-avatar" id="userAvatar">管</div>
+      <span class="topbar-name" id="userName">管理员</span>
+    </div>
+    <button class="btn-topbar-logout" id="logoutBtn">退出</button>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+
+  <!-- Type Bar -->
+  <div class="type-bar">
+    <div class="type-tabs">
+      <button class="type-tab active" data-type="劳务工">劳务工</button>
+      <button class="type-tab" data-type="正式工">正式工</button>
+    </div>
+    <div class="type-controls">
+      <select id="sessionSelect">
+        <option value="">-- 选择上传批次 --</option>
+      </select>
+      <button class="btn-primary-sm" id="uploadBtn">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        上传数据
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel Tab Nav -->
+  <div class="panel-tabs">
+    <button class="panel-tab active" data-tab="overview">📊 总览</button>
+    <button class="panel-tab" data-tab="compliance">📋 出勤达标率</button>
+    <button class="panel-tab" data-tab="overtime">⏰ 加班工时分析</button>
+    <button class="panel-tab" data-tab="detail">📄 明细</button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div id="loadingIndicator" style="display:none;">
+    <div class="card" style="text-align:center;padding:60px;color:var(--text-muted);font-size:14px;">
+      <div class="skeleton" style="width:200px;height:20px;margin:0 auto 12px;"></div>
+      <div class="skeleton" style="width:140px;height:14px;margin:0 auto;"></div>
+    </div>
+  </div>
+
+  <!-- Section: No data -->
+  <div id="emptySection" style="display:none;">
+    <div class="empty-state">
+      <div class="empty-state-icon"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+      <h3>暂无数据</h3>
+      <p>请先上传该类型的人员考勤数据</p>
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: OVERVIEW ===== -->
+  <div id="tabOverview" class="panel-content">
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card kpi-stagger">
+        <div class="kpi-label">👥 总人数</div>
+        <div class="kpi-value"><span id="kpiTotal">--</span></div>
+        <div class="kpi-sub" id="kpiTotalSub">—</div>
+      </div>
+      <div class="kpi-card kpi-stagger">
+        <div class="kpi-label">✅ 出勤率</div>
+        <div class="kpi-value kpi-green"><span id="kpiAttRate">--</span><span>%</span></div>
+        <div class="kpi-sub" id="kpiAttSub">—</div>
+      </div>
+      <div class="kpi-card kpi-stagger">
+        <div class="kpi-label">📊 平均工时</div>
+        <div class="kpi-value"><span id="kpiAvgHours">--</span></div>
+        <div class="kpi-sub" id="kpiHoursSub">—</div>
+      </div>
+      <div class="kpi-card kpi-stagger">
+        <div class="kpi-label">⏰ 超8H占比</div>
+        <div class="kpi-value kpi-warning"><span id="kpiOver8h">--</span><span>%</span></div>
+        <div class="kpi-sub" id="kpiOver8hSub">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title-text">部门级别 KPI</span></div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="deptKpiTable">
+          <thead><tr>
+            <th>部门</th><th>人数</th><th>出勤率</th><th>达标率</th><th>超8H率</th><th>平均工时</th><th>平均加班</th>
+          </tr></thead>
+          <tbody id="deptKpiBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="deptKpiEmpty" style="display:none;padding:32px;">
+        <p style="font-size:13px;color:var(--text-muted);">暂无部门数据</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: COMPLIANCE ===== -->
+  <div id="tabCompliance" class="panel-content" style="display:none;">
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-header"><span class="card-title-text">各部门出勤达标率</span></div>
+        <div class="chart-container"><canvas id="complianceChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title-text">排班情况</span></div>
+        <div class="chart-container"><canvas id="scheduledRateChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title-text">部门出勤达标明细</span></div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="complianceTable">
+          <thead><tr><th>部门</th><th>总人数</th><th>达标人数</th><th>达标率</th><th>排班人数</th><th>排班率</th></tr></thead>
+          <tbody id="complianceBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: OVERTIME ===== -->
+  <div id="tabOvertime" class="panel-content" style="display:none;">
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-header"><span class="card-title-text">加班工时分布</span></div>
+        <div class="chart-container"><canvas id="otDistributionChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title-text">周度加班对比</span></div>
+        <div class="chart-container"><canvas id="otWeeklyChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title-text">部门加班统计</span></div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="otDeptTable">
+          <thead><tr><th>部门</th><th>加班总工时</th><th>人均加班</th><th>超8H人数</th><th>超8H率</th></tr></thead>
+          <tbody id="otDeptBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 4: DETAIL ===== -->
+  <div id="tabDetail" class="panel-content" style="display:none;">
+    <div class="card">
+      <div class="card-header"><span class="card-title-text">人员明细</span></div>
+      <div class="table-search">
+        <input type="text" id="searchInput" placeholder="搜索工号、部门、班次..." autocomplete="off">
+        <button class="btn-primary-sm" id="searchBtn">搜索</button>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="detailTable">
+          <thead><tr>
+            <th>工号</th><th>部门</th><th>班次</th><th>每日总工时</th><th>日超8H</th><th>本周加班</th><th>排班正确</th><th>缺卡数</th><th>操作</th>
+          </tr></thead>
+          <tbody id="detailBody"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- Individual trend card (shown on row click) -->
+    <div class="card" id="individualTrendCard" style="display:none;">
+      <div class="card-header">
+        <span class="card-title-text" id="trendTitle">个人趋势</span>
+        <button class="btn-cancel" id="closeTrendBtn" style="padding:4px 12px;font-size:12px;">关闭</button>
+      </div>
+      <div class="chart-container" style="max-height:250px;"><canvas id="individualChart"></canvas></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== UPLOAD MODAL ===== -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <h2 class="modal-title">上传考勤数据</h2>
+    <p class="modal-desc">上传经过处理后的 <code>final_data.xlsx</code> 文件</p>
+    <div class="form-group">
+      <label class="form-label">人员类型</label>
+      <select class="form-select" id="modalWorkerType">
+        <option value="劳务工">劳务工</option>
+        <option value="正式工">正式工</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">选择文件</label>
+      <div class="upload-zone" id="uploadZone">
+        <div style="font-size:32px;color:var(--primary);margin-bottom:8px;">📄</div>
+        <div><strong>点击选择或拖拽文件</strong></div>
+        <div class="hint">支持 .xlsx 格式</div>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx" style="display:none;">
+      <div id="fileName" style="font-size:13px;color:var(--text-secondary);margin-top:8px;display:none;"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="modalCancel">取消</button>
+      <button class="btn-primary" id="modalSubmit" disabled>上传</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ Config ============ */
+const SESSION_STORE = 'workbench_session'
+const USER_STORE = 'workbench_user'
+const getToken = () => localStorage.getItem(SESSION_STORE)
+const getUser = () => { try { return JSON.parse(localStorage.getItem(USER_STORE)) } catch { return null } }
+const isAdmin = () => !!getToken()
+
+const API_BASE = window.location.port === '3001' || window.location.port === '3002'
+  ? 'http://localhost:3001/api'
+  : '/api'
+
+/* ============ State ============ */
+let state = {
+  workerType: '劳务工',
+  sessionId: '',
+  currentTab: 'overview',
+  searchTerm: '',
+  page: 1,
+  pageSize: 50,
+  charts: {},
+}
+
+/* ============ Toast ============ */
+function showToast(msg, type) {
+  const el = document.getElementById('toast')
+  el.textContent = msg; el.className = 'toast ' + type
+  el.style.opacity = '1'; el.style.transform = 'translateX(-50%) translateY(0)'
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(-50%) translateY(-10px)' }, 2500)
+}
+
+/* ============ Loading ============ */
+function showLoading() {
+  document.getElementById('loadingIndicator').style.display = 'block'
+  document.getElementById('emptySection').style.display = 'none'
+  document.getElementById('tabOverview').style.display = 'none'
+  document.getElementById('tabCompliance').style.display = 'none'
+  document.getElementById('tabOvertime').style.display = 'none'
+  document.getElementById('tabDetail').style.display = 'none'
+}
+function hideLoading() { document.getElementById('loadingIndicator').style.display = 'none' }
+function showEmpty() {
+  hideLoading()
+  document.getElementById('tabOverview').style.display = 'none'
+  document.getElementById('tabCompliance').style.display = 'none'
+  document.getElementById('tabOvertime').style.display = 'none'
+  document.getElementById('tabDetail').style.display = 'none'
+  document.getElementById('emptySection').style.display = 'block'
+}
+function showTab(tab) {
+  hideLoading()
+  document.getElementById('emptySection').style.display = 'none'
+  ;['tabOverview','tabCompliance','tabOvertime','tabDetail'].forEach(id => {
+    document.getElementById(id).style.display = (id === 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1)) ? 'block' : 'none'
+  })
+}
+
+/* ============ API Helpers ============ */
+async function apiGet(path) {
+  const res = await fetch(API_BASE + path)
+  if (!res.ok) { const err = await res.json(); throw new Error(err.error || '请求失败') }
+  return await res.json()
+}
+
+async function apiPost(path, body) {
+  const res = await fetch(API_BASE + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) { const err = await res.json(); throw new Error(err.error || '请求失败') }
+  return await res.json()
+}
+
+/* ============ Load Sessions ============ */
+async function loadSessions() {
+  try {
+    const sessions = await apiGet('/data/sessions?worker_type=' + encodeURIComponent(state.workerType))
+    const sel = document.getElementById('sessionSelect')
+    sel.innerHTML = '<option value="">-- 选择上传批次 --</option>' +
+      sessions.map(s => '<option value="' + s.id + '">' + new Date(s.created_at).toLocaleString('zh-CN') + ' (' + s.record_count + '条)' + '</option>').join('')
+    // If current sessionId is no longer valid, reset
+    if (state.sessionId && !sessions.some(s => s.id === state.sessionId)) {
+      state.sessionId = ''
+      sel.value = ''
+    } else if (state.sessionId) {
+      sel.value = state.sessionId
+    }
+    return sessions
+  } catch (e) {
+    console.error('Failed to load sessions:', e)
+    return []
+  }
+}
+
+/* ============ Load Dashboard Data ============ */
+async function loadAllData() {
+  const params = '?worker_type=' + encodeURIComponent(state.workerType) +
+    (state.sessionId ? '&session_id=' + state.sessionId : '')
+
+  showLoading()
+
+  try {
+    const [kpi, compliance, ot] = await Promise.all([
+      apiGet('/data/kpi' + params),
+      apiGet('/data/compliance' + params),
+      apiGet('/data/ot-analysis' + params),
+    ])
+
+    hideLoading()
+    if (kpi.total === 0) { showEmpty(); return }
+
+    // Show current tab
+    showTab(state.currentTab)
+
+    renderKPI(kpi)
+    renderDeptKPI(kpi)
+    renderCompliance(compliance)
+    renderOT(ot)
+    renderDetail() // reload detail table too
+
+    // Animate KPI cards
+    gsap.fromTo('.kpi-stagger', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power2.out', clearProps: 'transform' })
+
+  } catch (e) {
+    hideLoading()
+    showEmpty()
+    console.error('Failed to load data:', e)
+    showToast('加载数据失败: ' + e.message, 'error')
+  }
+}
+
+/* ============ Render KPI ============ */
+function renderKPI(data) {
+  document.getElementById('kpiTotal').textContent = data.total
+  document.getElementById('kpiTotalSub').textContent = '已出勤 ' + data.attended + ' 人'
+  document.getElementById('kpiAttRate').textContent = data.attendanceRate
+  document.getElementById('kpiAttSub').textContent = data.attended + '/' + data.total + ' 人无缺卡'
+  document.getElementById('kpiAvgHours').textContent = data.avgHours.toFixed(1)
+  document.getElementById('kpiHoursSub').textContent = '总工时 ' + (data.avgHours * data.total).toFixed(0) + 'h'
+  document.getElementById('kpiOver8h').textContent = data.over8hRate
+  document.getElementById('kpiOver8hSub').textContent = data.over8h + '/' + data.total + ' 人超8小时'
+}
+
+/* ============ Render Department KPI ============ */
+function renderDeptKPI(data) {
+  const tbody = document.getElementById('deptKpiBody')
+  const empty = document.getElementById('deptKpiEmpty')
+
+  if (!data.departments || data.departments.length === 0) {
+    tbody.innerHTML = ''
+    empty.style.display = 'block'
+    return
+  }
+  empty.style.display = 'none'
+
+  tbody.innerHTML = data.departments.map(d => '<tr>' +
+    '<td><strong>' + escapeHtml(d.name) + '</strong></td>' +
+    '<td>' + d.total + '</td>' +
+    '<td>' + d.attendanceRate + '%</td>' +
+    '<td>' + d.complianceRate + '%</td>' +
+    '<td>' + d.over8hRate + '%</td>' +
+    '<td>' + d.avgHours.toFixed(1) + 'h</td>' +
+    '<td>' + d.avgOT.toFixed(1) + 'h</td>' +
+    '</tr>').join('')
+}
+
+/* ============ Render Compliance ============ */
+let complianceChartInstance = null
+let scheduledChartInstance = null
+
+function renderCompliance(data) {
+  if (!data.byDepartment || data.byDepartment.length === 0) return
+
+  // Department compliance chart
+  const depts = data.byDepartment.slice(0, 15).map(d => d.name)
+  const rates = data.byDepartment.slice(0, 15).map(d => d.complianceRate)
+  const colors = rates.map(r => r >= 80 ? '#10b981' : r >= 60 ? '#f59e0b' : '#ef4444')
+
+  if (complianceChartInstance) complianceChartInstance.destroy()
+  const ctx1 = document.getElementById('complianceChart').getContext('2d')
+  complianceChartInstance = new Chart(ctx1, {
+    type: 'bar',
+    data: { labels: depts, datasets: [{
+      label: '达标率 (%)', data: rates, backgroundColor: colors, borderRadius: 4, barThickness: 24,
+    }]},
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
+        x: { ticks: { maxRotation: 45, font: { size: 11 } } },
+      },
+    },
+  })
+
+  // Scheduled rate chart (pie)
+  const scheduled = data.byDepartment.slice(0, 8).reduce((s, d) => s + d.scheduledCount, 0)
+  const total = data.byDepartment.slice(0, 8).reduce((s, d) => s + d.total, 0)
+  if (scheduledChartInstance) scheduledChartInstance.destroy()
+  const ctx2 = document.getElementById('scheduledRateChart').getContext('2d')
+  scheduledChartInstance = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: ['已排班', '未排班'],
+      datasets: [{
+        data: [scheduled, total - scheduled],
+        backgroundColor: ['#4f46e5', '#e2e8f0'],
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 12 } } },
+      },
+    },
+  })
+
+  // Department compliance table
+  const tbody = document.getElementById('complianceBody')
+  tbody.innerHTML = data.byDepartment.map(d => '<tr>' +
+    '<td><strong>' + escapeHtml(d.name) + '</strong></td>' +
+    '<td>' + d.total + '</td>' +
+    '<td>' + d.correct + '</td>' +
+    '<td>' + (d.complianceRate >= 80
+      ? '<span class="badge-success">' + d.complianceRate + '%</span>'
+      : d.complianceRate >= 60
+        ? '<span class="badge-warning">' + d.complianceRate + '%</span>'
+        : '<span class="badge-error">' + d.complianceRate + '%</span>') + '</td>' +
+    '<td>' + d.scheduledCount + '</td>' +
+    '<td>' + d.scheduledRate + '%</td>' +
+    '</tr>').join('')
+}
+
+/* ============ Render OT ============ */
+let otDistChartInstance = null
+let otWeeklyChartInstance = null
+
+function renderOT(data) {
+  // OT Distribution pie
+  if (otDistChartInstance) otDistChartInstance.destroy()
+  const distLabels = data.otDistribution.map(d => d.bucket)
+  const distData = data.otDistribution.map(d => d.count)
+  const distColors = ['#e2e8f0', '#93c5fd', '#60a5fa', '#3b82f6', '#6366f1', '#4f46e5']
+  const ctx1 = document.getElementById('otDistributionChart').getContext('2d')
+  otDistChartInstance = new Chart(ctx1, {
+    type: 'doughnut',
+    data: { labels: distLabels, datasets: [{ data: distData, backgroundColor: distColors, borderWidth: 0 }] },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+      },
+    },
+  })
+
+  // Weekly OT bar
+  if (otWeeklyChartInstance) otWeeklyChartInstance.destroy()
+  const ctx2 = document.getElementById('otWeeklyChart').getContext('2d')
+  otWeeklyChartInstance = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: data.weeklyBreakdown.map(w => w.week),
+      datasets: [{
+        label: '加班工时 (h)',
+        data: data.weeklyBreakdown.map(w => w.hours),
+        backgroundColor: ['#6366f1', '#4f46e5', '#818cf8'],
+        borderRadius: 6, barThickness: 48,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: v => v + 'h' } },
+      },
+    },
+  })
+
+  // OT by department table
+  const tbody = document.getElementById('otDeptBody')
+  tbody.innerHTML = data.byDepartment.map(d => '<tr>' +
+    '<td><strong>' + escapeHtml(d.name) + '</strong></td>' +
+    '<td>' + d.totalOT.toFixed(1) + 'h</td>' +
+    '<td>' + d.avgOT.toFixed(1) + 'h</td>' +
+    '<td>' + d.over8hCount + '</td>' +
+    '<td>' + (d.over8hRate > 30
+      ? '<span class="badge-error">' + d.over8hRate + '%</span>'
+      : d.over8hRate > 10
+        ? '<span class="badge-warning">' + d.over8hRate + '%</span>'
+        : '<span class="badge-success">' + d.over8hRate + '%</span>') + '</td>' +
+    '</tr>').join('')
+}
+
+/* ============ Render Detail ============ */
+async function renderDetail() {
+  const params = '?worker_type=' + encodeURIComponent(state.workerType) +
+    (state.sessionId ? '&session_id=' + state.sessionId : '') +
+    '&page=' + state.page + '&page_size=' + state.pageSize +
+    (state.searchTerm ? '&search=' + encodeURIComponent(state.searchTerm) : '')
+
+  try {
+    const data = await apiGet('/data/records' + params)
+    const tbody = document.getElementById('detailBody')
+
+    if (!data.records || data.records.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">暂无匹配记录</td></tr>'
+      document.getElementById('pagination').innerHTML = ''
+      return
+    }
+
+    tbody.innerHTML = data.records.map(r => {
+      const correctBadge = r['是否排班正确'] === '正确'
+        ? '<span class="badge-success">正确</span>'
+        : r['是否排班正确'] === '/'
+          ? '<span class="badge-neutral">/</span>'
+          : '<span class="badge-error">不正确</span>'
+      const over8hBadge = r['是否日超8H'] === '是'
+        ? '<span class="badge-warning">是</span>'
+        : '<span class="badge-success">否</span>'
+      const missing = r['缺卡数']
+      const missingBadge = missing === '0' || missing === 0 || missing === ''
+        ? '<span class="badge-success">0</span>'
+        : '<span class="badge-error">' + missing + '</span>'
+
+      return '<tr class="clickable" data-id="' + r.id + '">' +
+        '<td><strong>' + escapeHtml(r['工号'] || '') + '</strong></td>' +
+        '<td>' + escapeHtml(r['部门'] || '') + '</td>' +
+        '<td>' + escapeHtml(r['班次名称'] || '') + '</td>' +
+        '<td>' + (parseFloat(r['每日总工时']) || 0).toFixed(1) + 'h</td>' +
+        '<td>' + over8hBadge + '</td>' +
+        '<td>' + (parseFloat(r['本周加班工时']) || 0).toFixed(1) + 'h</td>' +
+        '<td>' + correctBadge + '</td>' +
+        '<td>' + missingBadge + '</td>' +
+        '<td><span style="font-size:12px;color:var(--primary);cursor:pointer;">查看趋势</span></td>' +
+        '</tr>'
+    }).join('')
+
+    // Row click - show individual trend
+    tbody.querySelectorAll('tr').forEach(tr => {
+      tr.addEventListener('click', () => {
+        const id = tr.getAttribute('data-id')
+        if (id) showIndividualTrend(id, data.records)
+      })
+    })
+
+    // Pagination
+    renderPagination(data.pagination)
+  } catch (e) {
+    console.error('Failed to load detail:', e)
+    document.getElementById('detailBody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">加载失败</td></tr>'
+  }
+}
+
+function renderPagination(p) {
+  const el = document.getElementById('pagination')
+  if (!p || p.total_pages <= 1) { el.innerHTML = ''; return }
+  el.innerHTML =
+    '<button onclick="goToPage(' + (p.page - 1) + ')" ' + (p.page <= 1 ? 'disabled' : '') + '>上一页</button>' +
+    '<span>第 ' + p.page + ' / ' + p.total_pages + ' 页（共 ' + p.total + ' 条）</span>' +
+    '<button onclick="goToPage(' + (p.page + 1) + ')" ' + (p.page >= p.total_pages ? 'disabled' : '') + '>下一页</button>'
+}
+
+function goToPage(page) {
+  state.page = page
+  renderDetail()
+  // Scroll to top of detail table
+  document.getElementById('tabDetail').scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+let individualChartInstance = null
+
+function showIndividualTrend(id, records) {
+  const record = records.find(r => String(r.id) === String(id))
+  if (!record) return
+
+  document.getElementById('trendTitle').textContent = '个人趋势 - ' + (record['工号'] || '')
+  document.getElementById('individualTrendCard').style.display = 'block'
+
+  // Show daily hours, OT hours, missing punch count as a mini chart
+  if (individualChartInstance) individualChartInstance.destroy()
+
+  const labels = ['每日总工时', '本周加班', '上周加班', '双周加班']
+  const values = [
+    parseFloat(record['每日总工时']) || 0,
+    parseFloat(record['本周加班工时']) || 0,
+    parseFloat(record['上周加班工时']) || 0,
+    parseFloat(record['双周加班工时']) || 0,
+  ]
+
+  const ctx = document.getElementById('individualChart').getContext('2d')
+  individualChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: '工时 (h)',
+        data: values,
+        backgroundColor: ['#4f46e5', '#f59e0b', '#10b981', '#6366f1'],
+        borderRadius: 4, barThickness: 32,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { callback: v => v + 'h' } } },
+    },
+  })
+
+  // Scroll to trend card
+  document.getElementById('individualTrendCard').scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+/* ============ Switch Worker Type ============ */
+async function switchWorkerType(type) {
+  state.workerType = type
+  state.sessionId = ''
+  state.page = 1
+
+  // Update tab UI
+  document.querySelectorAll('.type-tab').forEach(t => t.classList.toggle('active', t.dataset.type === type))
+
+  await loadSessions()
+  await loadAllData()
+}
+
+/* ============ Upload Flow ============ */
+let selectedFile = null
+
+function openUploadModal() {
+  const overlay = document.getElementById('uploadModal')
+  overlay.classList.add('active')
+  overlay.style.opacity = '1'
+  document.querySelector('.modal').style.opacity = '1'
+  document.querySelector('.modal').style.transform = 'scale(1) translateY(0)'
+  selectedFile = null
+  document.getElementById('fileName').style.display = 'none'
+  document.getElementById('modalSubmit').disabled = true
+}
+
+function closeUploadModal() {
+  const overlay = document.getElementById('uploadModal')
+  overlay.classList.remove('active')
+  overlay.style.opacity = '0'
+  selectedFile = null
+}
+
+async function handleUpload() {
+  if (!selectedFile) { showToast('请选择文件', 'error'); return }
+
+  const workerType = document.getElementById('modalWorkerType').value
+  const btn = document.getElementById('modalSubmit')
+  btn.disabled = true; btn.textContent = '上传中...'
+
+  try {
+    // Read file as base64
+    const base64 = await fileToBase64(selectedFile)
+    const result = await apiPost('/upload', {
+      file_base64: base64,
+      worker_type: workerType,
+    })
+
+    closeUploadModal()
+    showToast('上传成功，导入 ' + result.record_count + ' 条记录', 'success')
+
+    // If uploaded for current worker type, refresh
+    if (workerType === state.workerType) {
+      state.sessionId = result.session_id
+      await loadSessions()
+      // Set select to this session
+      document.getElementById('sessionSelect').value = result.session_id
+      await loadAllData()
+    } else {
+      // Switch to that type
+      switchWorkerType(workerType)
+    }
+  } catch (e) {
+    showToast('上传失败: ' + e.message, 'error')
+  } finally {
+    btn.disabled = false; btn.textContent = '上传'
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const base64 = reader.result.split(',')[1]
+      resolve(base64)
+    }
+    reader.onerror = () => reject(new Error('文件读取失败'))
+    reader.readAsDataURL(file)
+  })
+}
+
+/* ============ Helpers ============ */
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML }
+
+/* ============ Init ============ */
+document.addEventListener('DOMContentLoaded', async () => {
+  // Check auth
+  const token = getToken()
+  const user = getUser()
+
+  if (!token || !user) {
+    window.location.href = '/?auth_error=not_logged_in'
+    return
+  }
+
+  // Set user info
+  const avatarEl = document.getElementById('userAvatar')
+  const nameEl = document.getElementById('userName')
+  if (user.name) { nameEl.textContent = user.name; avatarEl.textContent = user.name.charAt(0) }
+  if (user.avatar) { avatarEl.style.backgroundImage = 'url(' + user.avatar + ')'; avatarEl.style.backgroundSize = 'cover'; avatarEl.textContent = '' }
+
+  // Loading bar
+  gsap.to('#loadingBar', { width: '60%', duration: 0.4, ease: 'power2.out' })
+
+  // Type tabs
+  document.querySelectorAll('.type-tab').forEach(tab => {
+    tab.addEventListener('click', () => switchWorkerType(tab.dataset.type))
+  })
+
+  // Panel tabs
+  document.querySelectorAll('.panel-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'))
+      tab.classList.add('active')
+      state.currentTab = tab.dataset.tab
+      showTab(state.currentTab)
+      // If detail tab, re-render with latest
+      if (state.currentTab === 'detail') renderDetail()
+    })
+  })
+
+  // Session select
+  document.getElementById('sessionSelect').addEventListener('change', (e) => {
+    state.sessionId = e.target.value
+    state.page = 1
+    loadAllData()
+  })
+
+  // Upload modal
+  document.getElementById('uploadBtn').addEventListener('click', openUploadModal)
+  document.getElementById('modalCancel').addEventListener('click', closeUploadModal)
+  document.getElementById('uploadModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeUploadModal()
+  })
+  document.getElementById('modalSubmit').addEventListener('click', handleUpload)
+
+  // File selection
+  const uploadZone = document.getElementById('uploadZone')
+  const fileInput = document.getElementById('fileInput')
+  uploadZone.addEventListener('click', () => fileInput.click())
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover') })
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'))
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault(); uploadZone.classList.remove('dragover')
+    if (e.dataTransfer.files.length) onFileSelected(e.dataTransfer.files[0])
+  })
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) onFileSelected(fileInput.files[0])
+  })
+
+  function onFileSelected(file) {
+    if (!file.name.endsWith('.xlsx')) {
+      showToast('请选择 .xlsx 文件', 'error')
+      return
+    }
+    selectedFile = file
+    const fn = document.getElementById('fileName')
+    fn.style.display = 'block'
+    fn.textContent = '已选择: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)'
+    document.getElementById('modalSubmit').disabled = false
+  }
+
+  // Search
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    state.searchTerm = document.getElementById('searchInput').value.trim()
+    state.page = 1
+    renderDetail()
+  })
+  document.getElementById('searchInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('searchBtn').click()
+  })
+
+  // Close trend
+  document.getElementById('closeTrendBtn').addEventListener('click', () => {
+    document.getElementById('individualTrendCard').style.display = 'none'
+  })
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem(SESSION_STORE)
+    localStorage.removeItem(USER_STORE)
+    window.location.href = '/'
+  })
+
+  // Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const overlay = document.getElementById('uploadModal')
+      if (overlay.classList.contains('active')) closeUploadModal()
+    }
+  })
+
+  // Initial load
+  gsap.to('#loadingBar', { width: '100%', duration: 0.3, opacity: 0, delay: 0.3 })
+  await loadSessions()
+  await loadAllData()
+})
+</script>
+</body>
+</html>
